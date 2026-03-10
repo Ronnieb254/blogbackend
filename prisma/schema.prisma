@@ -1,0 +1,135 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  fullName  String?
+  avatar    String?
+  isActive  Boolean  @default(true)
+  isAdmin   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  blogs     Blog[]
+  @@map("users")
+}
+
+model Blog {
+  id              Int      @id @default(autoincrement())
+  title           String
+  slug            String   @unique
+  content         String   @db.Text
+  excerpt         String?
+  featuredImage   String?
+  metaTitle       String?
+  metaDescription String?
+  published       Boolean  @default(false)
+  publishedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  tags            String[]
+  
+  authorId        Int
+  author          User     @relation(fields: [authorId], references: [id])
+  
+  subscribers     Subscriber[]
+  campaigns       EmailCampaign[]
+  
+  @@map("blogs")
+}
+
+model Subscriber {
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  fullName      String?
+  isActive      Boolean  @default(true)
+  confirmed     Boolean  @default(false)
+  token         String?
+  subscribedAt  DateTime @default(now())
+  
+  blogs         Blog[]
+  
+  @@map("subscribers")
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  title       String
+  slug        String   @unique
+  description String?
+  icon        String?
+  content     String?  @db.Text
+  price       String?
+  isActive    Boolean  @default(true)
+  orderIndex  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("services")
+}
+
+model AboutUs {
+  id           Int      @id @default(autoincrement())
+  title        String
+  mission      String?  @db.Text
+  vision       String?  @db.Text
+  history      String?  @db.Text
+  teamMembers  String?  @db.Text // JSON string
+  values       String?  @db.Text
+  updatedAt    DateTime @updatedAt
+  
+  @@map("about_us")
+}
+
+model Contact {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  @@map("contacts")
+}
+
+model Policy {
+  id            Int      @id @default(autoincrement())
+  type          String   @unique // privacy, terms, cookie, etc.
+  title         String
+  content       String   @db.Text
+  version       String   @default("1.0")
+  effectiveDate DateTime @default(now())
+  isActive      Boolean  @default(true)
+  updatedAt     DateTime @updatedAt
+  
+  @@map("policies")
+}
+
+model EmailCampaign {
+  id              Int      @id @default(autoincrement())
+  subject         String
+  content         String   @db.Text
+  template        String   @default("default")
+  status          String   @default("draft") // draft, scheduled, sent
+  sentAt          DateTime?
+  recipientCount  Int      @default(0)
+  openCount       Int      @default(0)
+  clickCount      Int      @default(0)
+  createdAt       DateTime @default(now())
+  
+  blogId          Int?
+  blog            Blog?    @relation(fields: [blogId], references: [id])
+  
+  @@map("email_campaigns")
+}
