@@ -18,9 +18,9 @@ class BlogService {
     });
 
     // Send email notification if published
-    if (input.published) {
-      await emailQueue.add('new-blog', { blogId: blog.id });
-    }
+    // if (input.published) {
+    //   await emailQueue.add('new-blog', { blogId: blog.id });
+    // }
 
     return blog;
   }

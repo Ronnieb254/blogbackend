@@ -15,8 +15,8 @@ const typeDefs = gql`
     isActive: Boolean!
     isAdmin: Boolean!
     createdAt: DateTime!
-    updatedAt: DateTime!
-    blogs: [Blog!]!
+    updatedAt: DateTime
+    blogs: [Blog]
   }
 
   type AuthPayload {
