@@ -1,13 +1,19 @@
 FROM node:24
-
 WORKDIR /app
 
-# Copy package files first
+# Copy package files first (for layer caching)
 COPY package*.json ./
 
+# Install dependencies at BUILD time
+RUN npm install
+
+# Copy the rest of your source code (including schema.prisma)
+COPY . .
+
+# Generate Prisma client AFTER install and source is present
 RUN npx prisma generate
 
 EXPOSE 4000
 
-# Install dependencies and start the app
-CMD ["sh", "-c", "npm install && npm start"]
+# Run migrations then start the app
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
