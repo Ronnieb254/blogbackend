@@ -1,14 +1,11 @@
-FROM node:18-alpine
+FROM node:24
 
 WORKDIR /app
 
+# Copy package files first
 COPY package*.json ./
-RUN npm install
-
-COPY . .
-
-RUN npx prisma generate
 
 EXPOSE 4000
 
-CMD ["npm", "start"]
+# Install dependencies and start the app
+CMD ["sh", "-c", "npm install && npm start"]
