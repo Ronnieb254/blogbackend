@@ -222,44 +222,85 @@ const resolvers = {
     },
 
     // Email Marketing
-    subscribe: async (_, { input }, { prisma }) => {
-      const existing = await prisma.subscriber.findUnique({
-        where: { email: input.email }
-      });
+   subscribe: async (_, { input }, { prisma }) => {
+  try {
+    // CHECK EXISTING SUBSCRIBER
+    const existing = await prisma.subscriber.findUnique({
+      where: { email: input.email },
+    });
 
-      if (existing) {
-        if (!existing.isActive) {
-          await prisma.subscriber.update({
-            where: { id: existing.id },
-            data: { isActive: true }
-          });
-          return { success: true, message: 'Subscription reactivated', id: existing.id };
-        }
-        return { success: false, message: 'Already subscribed', id: existing.id };
+    // =========================================
+    // ALREADY EXISTS
+    // =========================================
+    if (existing) {
+      // Reactivate inactive subscriber
+      if (!existing.isActive) {
+        await prisma.subscriber.update({
+          where: { id: existing.id },
+          data: {
+            isActive: true,
+            confirmed: true,
+          },
+        });
+
+        // SEND WELCOME BACK EMAIL
+        await emailService.sendWelcomeEmail(input.email);
+
+        return {
+          success: true,
+          message: "Welcome back! Subscription reactivated.",
+          id: existing.id,
+        };
       }
 
-      const token = Math.random().toString(36).substring(2);
-      
-      const subscriber = await prisma.subscriber.create({
-        data: {
-          email: input.email,
-          fullName: input.fullName,
-          token,
-          blogs: input.blogIds ? {
-            connect: input.blogIds.map(id => ({ id: parseInt(id) }))
-          } : undefined
-        }
-      });
+      return {
+        success: false,
+        message: "Already subscribed",
+        id: existing.id,
+      };
+    }
 
-      // Send confirmation email
-      await emailService.sendSingleEmail(
-        input.email,
-        'Confirm your subscription',
-        `<p>Click <a href="${process.env.FRONTEND_URL}/confirm?token=${token}">here</a> to confirm.</p>`
-      );
+    // =========================================
+    // CREATE NEW SUBSCRIBER
+    // =========================================
+    const subscriber = await prisma.subscriber.create({
+      data: {
+        email: input.email,
+        fullName: input.fullName || null,
 
-      return { success: true, message: 'Check your email to confirm subscription', id: subscriber.id };
-    },
+        // AUTO-CONFIRM
+        confirmed: true,
+
+        isActive: true,
+
+        blogs: input.blogIds
+          ? {
+              connect: input.blogIds.map((id) => ({
+                id: parseInt(id),
+              })),
+            }
+          : undefined,
+      },
+    });
+
+    // =========================================
+    // SEND PROFESSIONAL WELCOME EMAIL
+    // =========================================
+    await emailService.sendWelcomeEmail(input.email);
+
+    return {
+      success: true,
+      message: "Successfully subscribed to weekly newsletter",
+      id: subscriber.id,
+    };
+  } catch (error) {
+    console.error("SUBSCRIBE ERROR:", error);
+
+    throw new Error(
+      error.message || "Failed to subscribe. Please try again."
+    );
+  }
+},
 
     unsubscribe: async (_, { email }, { prisma }) => {
       const subscriber = await prisma.subscriber.findUnique({ where: { email } });
