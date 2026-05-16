@@ -12,7 +12,7 @@ COPY . .
 
 # Generate Prisma client AFTER install and source is present
 RUN npx prisma generate
-RUN npm run db:seed
+# RUN npm run db:seed
 
 
 EXPOSE 4000
