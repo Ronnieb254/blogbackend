@@ -19,6 +19,8 @@ const allowlist = [
   "http://localhost:5174",
   "https://thoughtcanva.com",
   "https://WWW.thoughtcanva.com",
+  "https://payhip.com/"
+
 ]
 const corsOptionsDelegate = function (req, callback) {
   var corsOptions;
