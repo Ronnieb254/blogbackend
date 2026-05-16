@@ -290,6 +290,7 @@ class EmailService {
       html,
     });
   }
+  
 }
 
 module.exports = new EmailService();
