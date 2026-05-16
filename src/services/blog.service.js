@@ -47,9 +47,9 @@ class BlogService {
     });
 
     // Send notification if newly published
-    if (input.published && !wasPublished) {
-      await emailQueue.add('new-blog', { blogId: blog.id });
-    }
+    // if (input.published && !wasPublished) {
+    //   await emailQueue.add('new-blog', { blogId: blog.id });
+    // }
 
     return blog;
   }
