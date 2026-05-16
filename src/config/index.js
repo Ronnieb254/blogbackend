@@ -15,11 +15,11 @@ module.exports = {
   SMTP_PORT: process.env.SMTP_PORT || 587,
   SMTP_USER: process.env.SMTP_USER,
   SMTP_PASS: process.env.SMTP_PASS,
-  FROM_EMAIL: process.env.FROM_EMAIL || 'noreply@yourdomain.com',
+  FROM_EMAIL: process.env.FROM_EMAIL || 'veronicahbironga@gmail.com',
   
   // Redis for Bull Queue
   REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379',
   
   // Frontend URL for email links
-  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3000'
+  FRONTEND_URL: process.env.FRONTEND_URL || 'https://thoughtcanva.com/'
 };
