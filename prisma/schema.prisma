@@ -99,6 +99,7 @@ model Contact {
   message   String   @db.Text
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
+  contactReplies ContactReply[]
   
   @@map("contacts")
 }
