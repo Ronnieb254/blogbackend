@@ -383,12 +383,14 @@ const resolvers = {
       });
     }
   },
-  contactReplies: async (_, { contactId }, { prisma }) => {
-  return prisma.contactReply.findMany({
-    where: { contactId: parseInt(contactId) },
-    orderBy: { createdAt: "asc" },
-  });
-},
+
+contactReplies: async (_, { contactId }, { prisma }) => {
+      return prisma.contactReply.findMany({
+        where: { contactId: parseInt(contactId) },
+        orderBy: { createdAt: "asc" },
+      });
+    },
+
 sendContactReply: async (_, { contactId, message }, { prisma }) => {
   const contact = await prisma.contact.findUnique({
     where: { id: parseInt(contactId) },
