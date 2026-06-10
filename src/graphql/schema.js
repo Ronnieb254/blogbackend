@@ -72,17 +72,7 @@ const typeDefs = gql`
     updatedAt: DateTime!
   }
 
-  # Contact Types
-  type Contact {
-    id: ID!
-    name: String!
-    email: String!
-    phone: String
-    subject: String
-    message: String!
-    isRead: Boolean!
-    createdAt: DateTime!
-  }
+ 
 
   # Policy Types
   type Policy {
@@ -171,14 +161,7 @@ const typeDefs = gql`
     values: String
   }
 
-  input ContactInput {
-    name: String!
-    email: String!
-    phone: String
-    subject: String
-    message: String!
-  }
-
+ 
   input PolicyInput {
     type: String!
     title: String!
@@ -212,15 +195,13 @@ const typeDefs = gql`
     # About Us
     aboutUs: AboutUs
     
-    # Contacts (Admin only)
-    contacts(unreadOnly: Boolean, limit: Int = 50): [Contact!]!
-    contact(id: ID!): Contact
+   
     
     # Policies
     policies(type: String): [Policy!]!
     policy(type: String!): Policy
 
-    contactReplies(contactId: ID!): [ContactReply]
+   
     
     # Subscribers (Admin only)
     subscribers(activeOnly: Boolean = true): [Subscriber!]!
@@ -247,11 +228,6 @@ const typeDefs = gql`
     
     # About Us
     updateAboutUs(input: AboutUsInput!): AboutUs!
-    
-    # Contact
-    createContact(input: ContactInput!): Contact!
-    markContactRead(id: ID!, read: Boolean!): Contact!
-    deleteContact(id: ID!): MutationResponse!
     
     # Policy CRUD
     createPolicy(input: PolicyInput!): Policy!

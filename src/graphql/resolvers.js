@@ -11,8 +11,7 @@ const resolvers = {
   JSON: JSONResolver,
 
   Query: {
-   Query: {
-  
+
     // Auth
     me: async (_, __, { user }) => {
       if (!user) throw new Error('Not authenticated');
@@ -52,21 +51,7 @@ const resolvers = {
       return await prisma.aboutUs.findFirst();
     },
 
-    // Contacts (Admin only)
-    contacts: async (_, { unreadOnly, limit }, { user, isAdmin, prisma }) => {
-      if (!isAdmin) throw new Error('Admin access required');
-      const where = unreadOnly !== undefined ? { isRead: !unreadOnly } : {};
-      return await prisma.contact.findMany({
-        where,
-        take: limit,
-        orderBy: { createdAt: 'desc' }
-      });
-    },
-
-    contact: async (_, { id }, { user, isAdmin, prisma }) => {
-      if (!isAdmin) throw new Error('Admin access required');
-      return await prisma.contact.findUnique({ where: { id: parseInt(id) } });
-    },
+    
 
     // Policies
     policies: async (_, { type }, { prisma }) => {
@@ -100,6 +85,7 @@ const resolvers = {
         include: { blog: true }
       });
     }
+
   },
 
   Mutation: {
@@ -171,26 +157,9 @@ const resolvers = {
       return await prisma.aboutUs.create({ data: input });
     },
 
-    // Contact
-    createContact: async (_, { input }, { prisma }) => {
-      return await prisma.contact.create({ data: input });
-    },
+   
 
-    markContactRead: async (_, { id, read }, { user, isAdmin, prisma }) => {
-      if (!isAdmin) throw new Error('Admin access required');
-      
-      return await prisma.contact.update({
-        where: { id: parseInt(id) },
-        data: { isRead: read }
-      });
-    },
-
-    deleteContact: async (_, { id }, { user, isAdmin, prisma }) => {
-      if (!isAdmin) throw new Error('Admin access required');
-      
-      await prisma.contact.delete({ where: { id: parseInt(id) } });
-      return { success: true, message: 'Contact deleted', id };
-    },
+  
 
     // Policy CRUD
     createPolicy: async (_, { input }, { user, isAdmin, prisma }) => {
@@ -385,38 +354,7 @@ const resolvers = {
       });
     }
   },
- 
-sendContactReply: async (_, { contactId, message }, { prisma }) => {
-  const contact = await prisma.contact.findUnique({
-    where: { id: parseInt(contactId) },
-  });
 
-  if (!contact) throw new Error("Contact not found");
-
-  // save reply in DB
-  await prisma.contactReply.create({
-    data: {
-      contactId: contact.id,
-      message,
-      sender: "admin",
-    },
-  });
-
-  // send email to user
-  await emailService.sendSingleEmail(
-    contact.email,
-    `Re: ${contact.subject || "Your message"}`,
-    `
-      <p>${message}</p>
-      <hr/>
-      <p style="font-size:12px;color:#888">
-        Reply from support team
-      </p>
-    `
-  );
-
-  return { success: true };
-}
 };
 
 module.exports = resolvers;
