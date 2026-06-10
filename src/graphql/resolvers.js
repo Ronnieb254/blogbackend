@@ -11,12 +11,8 @@ const resolvers = {
   JSON: JSONResolver,
 
   Query: {
-     contactReplies: async (_, { contactId }, { prisma }) => {
-  return prisma.contactReply.findMany({
-    where: { contactId: parseInt(contactId) },
-    orderBy: { createdAt: "asc" },
-  });
-},
+   Query: {
+  
     // Auth
     me: async (_, __, { user }) => {
       if (!user) throw new Error('Not authenticated');
