@@ -219,6 +219,8 @@ const typeDefs = gql`
     # Policies
     policies(type: String): [Policy!]!
     policy(type: String!): Policy
+
+    contactReplies(contactId: ID!): [ContactReply]
     
     # Subscribers (Admin only)
     subscribers(activeOnly: Boolean = true): [Subscriber!]!
