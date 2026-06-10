@@ -383,43 +383,43 @@ const resolvers = {
       });
     }
   },
-  contactReplies: async (_, { contactId }, { prisma }) => {
-  return prisma.contactReply.findMany({
-    where: { contactId: parseInt(contactId) },
-    orderBy: { createdAt: "asc" },
-  });
-},
-sendContactReply: async (_, { contactId, message }, { prisma }) => {
-  const contact = await prisma.contact.findUnique({
-    where: { id: parseInt(contactId) },
-  });
+//   contactReplies: async (_, { contactId }, { prisma }) => {
+//   return prisma.contactReply.findMany({
+//     where: { contactId: parseInt(contactId) },
+//     orderBy: { createdAt: "asc" },
+//   });
+// },
+// sendContactReply: async (_, { contactId, message }, { prisma }) => {
+//   const contact = await prisma.contact.findUnique({
+//     where: { id: parseInt(contactId) },
+//   });
 
-  if (!contact) throw new Error("Contact not found");
+//   if (!contact) throw new Error("Contact not found");
 
-  // save reply in DB
-  await prisma.contactReply.create({
-    data: {
-      contactId: contact.id,
-      message,
-      sender: "admin",
-    },
-  });
+//   // save reply in DB
+//   await prisma.contactReply.create({
+//     data: {
+//       contactId: contact.id,
+//       message,
+//       sender: "admin",
+//     },
+//   });
 
-  // send email to user
-  await emailService.sendSingleEmail(
-    contact.email,
-    `Re: ${contact.subject || "Your message"}`,
-    `
-      <p>${message}</p>
-      <hr/>
-      <p style="font-size:12px;color:#888">
-        Reply from support team
-      </p>
-    `
-  );
+//   // send email to user
+//   await emailService.sendSingleEmail(
+//     contact.email,
+//     `Re: ${contact.subject || "Your message"}`,
+//     `
+//       <p>${message}</p>
+//       <hr/>
+//       <p style="font-size:12px;color:#888">
+//         Reply from support team
+//       </p>
+//     `
+//   );
 
-  return { success: true };
-}
+//   return { success: true };
+// }
 };
 
 module.exports = resolvers;
